@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 function App() {
-
+  
   const stories = [
     {
       title: 'React',
@@ -20,18 +20,30 @@ function App() {
       objectID: 1,
     }
   ];
-  const handleChange = e => console.log(e.target.value);
+  const handleSearch = e => console.log(e.target.value);
 
   return (
     <div>
-      <h1>My Hacker Stories</h1>
-      <label htmlFor='search'>Search: </label>
-      <input id='search' type='text' onChange={handleChange}/>
-      <List list={stories} />
+      <Search action={handleSearch}/>
     </div>
   )
 }
 
+function Search({ action }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const handleChange = e => {
+    setSearchTerm(e.target.value);
+    action(e);
+  }
+  return ( 
+    <div>
+      <h1>My Hacker Stories</h1>
+      <label htmlFor='search'>Search: </label>
+      <input id='search' type='text' onChange={action}/>
+      <p>Searching for <strong>{searchTerm}</strong></p>
+    </div>
+  )
+}
 function List({ list }) {
   return list.map(function(item) {
     return (
