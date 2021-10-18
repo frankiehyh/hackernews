@@ -1,7 +1,21 @@
 import React, { useState, useEffect } from 'react'
 
 function App() {
+
+  function useSemiPersistantState(key, initialState) {
+    const [value, setValue] = useState(
+      localStorage.getItem(key) || initialState
+    );
   
+    useEffect(() => {
+      localStorage.setItem(key, value);
+    }, [value, key]);
+
+    return [value, setValue];
+  }
+
+  const [searchTerm, setSearchTerm] = useSemiPersistantState('search', 'React');
+
   const stories = [
     {
       title: 'React',
@@ -20,42 +34,49 @@ function App() {
       objectID: 1,
     }
   ];
-  const handleSearch = e => console.log(e.target.value);
+
+  const handleSearch = e => {
+    setSearchTerm(e.target.value);
+  }
+
+  const searchedStories = stories.filter(story =>
+     story.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div>
-      <Search action={handleSearch}/>
+      <h1>My Hacker Stories</h1>
+      <Search onSearch={handleSearch} search={searchTerm} />
+      <p>Searching for <strong>{searchTerm}</strong></p>
+      <List list={searchedStories} />
     </div>
   )
 }
 
-function Search({ action }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const handleChange = e => {
-    setSearchTerm(e.target.value);
-    action(e);
-  }
+function Search({ search, onSearch }) {
   return ( 
     <div>
-      <h1>My Hacker Stories</h1>
       <label htmlFor='search'>Search: </label>
-      <input id='search' type='text' onChange={action}/>
-      <p>Searching for <strong>{searchTerm}</strong></p>
+      <input id='search' type='text' value={search} onChange={onSearch}/>
     </div>
   )
 }
+
 function List({ list }) {
-  return list.map(function(item) {
-    return (
-      <div key={item.objectID}>
-        <span>
-          <a href={item.url}>{item.title}</a>
-        </span>
-        <span>{item.author}</span>
-        <span>{item.num_comments}</span>
-        <span>{item.points}</span>
-      </div>
-    )
-  })}
+  return list.map(({objectId, ...item}) => <Item key={item.objectID} {...item} />)
+}
+
+function Item({ title, url, author, num_comments, points }) {
+  return (
+    <div>
+      <span>
+        <a href={url}>{title}</a>
+      </span>
+      <span>{author}</span>
+      <span>{num_comments}</span>
+      <span>{points}</span>
+    </div>
+  )
+}
 
 export default App;
