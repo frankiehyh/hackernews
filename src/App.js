@@ -55,10 +55,10 @@ function App() {
 
 function Search({ search, onSearch }) {
   return ( 
-    <div>
+    <>
       <label htmlFor='search'>Search: </label>
       <input id='search' type='text' value={search} onChange={onSearch}/>
-    </div>
+    </>
   )
 }
 
@@ -68,14 +68,14 @@ function List({ list }) {
 
 function Item({ title, url, author, num_comments, points }) {
   return (
-    <div>
+    <>
       <span>
         <a href={url}>{title}</a>
       </span>
       <span>{author}</span>
       <span>{num_comments}</span>
       <span>{points}</span>
-    </div>
+    </>
   )
 }
 
