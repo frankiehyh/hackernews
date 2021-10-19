@@ -34,8 +34,24 @@ function App() {
       objectID: 1,
     }
   ];
+  const getAsyncStories = () => 
+    new Promise(resolve => setTimeout(() => (resolve(initialStories)), 2000));
 
-  const [stories, setStories] = useState(initialStories);
+  const [stories, setStories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    getAsyncStories()
+    .then(initialStories => {
+      setStories(initialStories);
+      setIsLoading(false);
+    })
+    .catch(() => setIsError(true))
+  }, []);
+
   const handleRemovedStory = item => {
       const newStories = stories.filter(
           story => item.objectID !== story.objectID
@@ -62,7 +78,10 @@ function App() {
           <strong>Searching for...</strong>
       </InputWithLabel>
       <p>Searching for <strong>{searchTerm}</strong></p>
+      { isError && <p>Something went wrong...</p> }
+      { isLoading ? (<p>Loading...</p>): 
       <List list={searchedStories} onRemoveItem={handleRemovedStory}/>
+      } 
     </div>
   )
 }
